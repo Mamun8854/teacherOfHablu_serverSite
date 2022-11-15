@@ -24,11 +24,11 @@ async function run() {
 
     app.get("/services", async (req, res) => {
       const size = parseInt(req.query.size);
+      console.log(size);
       const query = {};
       const cursor = serviceCollection.find(query);
       const service = await cursor.limit(size).sort({ date: -1 }).toArray();
-      const count = await serviceCollection.estimatedDocumentCount();
-      res.send({ count, service });
+      res.send(service);
     });
   } finally {
   }
