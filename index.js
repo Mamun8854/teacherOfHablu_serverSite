@@ -22,6 +22,8 @@ async function run() {
       .db("teacherOfHablu")
       .collection("services");
 
+    const reviewCollection = client.db("teacherOfHablu").collection("review");
+
     app.get("/services", async (req, res) => {
       const size = parseInt(req.query.size);
       const query = {};
@@ -40,6 +42,31 @@ async function run() {
     app.post("/addService", async (req, res) => {
       const service = req.body;
       const result = await serviceCollection.insertOne(service);
+      res.send(result);
+    });
+
+    // review section
+
+    app.post("/review", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    });
+
+    app.get("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { postId: id };
+      const postId = reviewCollection.find(query).sort({ date: -1 });
+      const result = await postId.toArray();
+      res.send(result);
+    });
+    app.get("/review/", async (req, res) => {
+      const email = req.query.email;
+      const allReview = await reviewCollection
+        .find({})
+        .sort({ date: -1 })
+        .toArray();
+      const result = allReview.filter((item) => item?.userEmail === email);
       res.send(result);
     });
   } finally {
